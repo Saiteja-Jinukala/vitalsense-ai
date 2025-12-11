@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Anomaly detection in IoT — Health sector</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo-dot"></div>
+        <div>
+          <h1>Anomaly detection in IoT — Health sector</h1>
+          <p class="subtitle">Smart risk analysis dashboard</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-grid">
+
+      <section class="controls card">
+        <h2>Input</h2>
+
+        <!-- CSV upload -->
+        <form action="/predict" method="POST" enctype="multipart/form-data" class="form-inline">
+          <label class="field-label">Upload CSV (model columns compatible)</label>
+          <input type="file" name="file" accept=".csv" required>
+          <button type="submit" class="btn-primary">Predict CSV</button>
+        </form>
+
+        <hr>
+
+        <!-- Manual input -->
+        <h3>Manual Entry</h3>
+        <form action="/manual_predict" method="POST" class="manual-form">
+          <div class="grid-2">
+            <label>Patient ID <input name="patient_id" type="text" placeholder="e.g. 123"></label>
+            <label>Age <input name="age" type="number" step="1" required></label>
+            <label>Gender <select name="gender"><option value="0">Female (0)</option><option value="1">Male (1)</option></select></label>
+            <label>Heart Rate <input name="heartrate" type="number" step="any" required></label>
+            <label>Respiratory Rate <input name="resp" type="number" step="any" required></label>
+            <label>Body Temp (°C) <input name="bodytemp" type="number" step="0.1" required></label>
+            <label>Oxygen (%) <input name="oxygen" type="number" step="0.1" required></label>
+            <label>Systolic BP <input name="sbp" type="number" step="any" required></label>
+            <label>Diastolic BP <input name="dbp" type="number" step="any" required></label>
+            <label>Weight (kg) <input name="weight" type="number" step="any" required></label>
+            <label>Height (m) <input name="height" type="number" step="0.01" required></label>
+          </div>
+          <div class="actions">
+            <button type="submit" class="btn-primary">Predict Manually</button>
+          </div>
+        </form>
+
+        {% if manual_result %}
+        <div class="manual-result card mini">
+          <h4>Manual prediction</h4>
+          <div class="inline-row">
+            <div><strong>Patient</strong><div>{{ manual_result['Patient ID'] }}</div></div>
+            <div><strong>Risk</strong><div class="badge-inline {{ 'badge-high' if manual_result['Predicted Risk']=='High Risk' else 'badge-low' }}">{{ manual_result['Predicted Risk'] }}</div></div>
+            <div><strong>Confidence</strong><div>{{ manual_result['Confidence'] }}</div></div>
+            <div><strong>Anomaly</strong><div class="{{ 'badge-anom' if manual_result['Anomaly']=='Anomaly' else 'badge-normal' }}">{{ manual_result['Anomaly'] }}</div></div>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="error-box">{{ error }}</div>
+        {% endif %}
+      </section>
+
+      <section class="summary card">
+        <h2>Summary</h2>
+        {% if summary %}
+        <div class="summary-grid">
+          <div class="stat card-stat stat-high">
+            <div class="stat-num">{{ summary.high }}</div>
+            <div class="stat-label">High Risk</div>
+          </div>
+          <div class="stat card-stat stat-low">
+            <div class="stat-num">{{ summary.low }}</div>
+            <div class="stat-label">Low Risk</div>
+          </div>
+          <div class="stat card-stat stat-anom">
+            <div class="stat-num">{{ summary.anomaly }}</div>
+            <div class="stat-label">Anomalies</div>
+          </div>
+          <div class="stat card-stat stat-normal">
+            <div class="stat-num">{{ summary.normal }}</div>
+            <div class="stat-label">Normal</div>
+          </div>
+        </div>
+
+        {% if download_file %}
+        <div class="download-row">
+          <a class="btn-download" href="/download/{{ download_file }}">⬇️ Download Results CSV</a>
+        </div>
+        {% endif %}
+
+        {% endif %}
+      </section>
+
+      <section class="results card" id="resultsCard">
+        <h2>Predictions</h2>
+
+        <div class="legend">
+          <div class="legend-item"><span class="dot dot-high"></span> High Risk</div>
+          <div class="legend-item"><span class="dot dot-low"></span> Low Risk</div>
+          <div class="legend-item"><span class="dot dot-anom"></span> Anomaly</div>
+        </div>
+
+        <div class="table-wrap" id="tableWrap">
+          {% if table %}
+            <!-- server produced table HTML (pandas Styler) -->
+            <div id="rawTable">{{ table | safe }}</div>
+          {% else %}
+            <div class="hint">Upload a CSV or use Manual Entry to see results here.</div>
+          {% endif %}
+        </div>
+
+        <div class="legend-explain">
+          <span class="explain-circle dot-high"></span> <strong>Red</strong> = High risk — immediate attention recommended.<br>
+          <span class="explain-circle dot-anom"></span> <strong>Yellow</strong> = Sensor anomaly detected — recheck equipment/readings.<br>
+          <span class="explain-circle dot-low"></span> <strong>Green</strong> = Low risk / normal.
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="footer">
+      <small>IoT Health Anomaly · Demo dashboard</small>
+    </footer>
+  </div>
+
+  <script>
+    // After page loads, post-process the table HTML (if any) to add small colored circle column
+    (function() {
+      const raw = document.getElementById('rawTable');
+      if (!raw) return;
+
+      // Wait a tick for table HTML to be inserted
+      setTimeout(() => {
+        // find first table inside rawTable
+        const table = raw.querySelector('table');
+        if (!table) return;
+
+        // Add header for severity circle
+        const thead = table.querySelector('thead tr');
+        if (thead) {
+          const th = document.createElement('th');
+          th.innerText = '';
+          th.style.width = '40px';
+          thead.insertBefore(th, thead.firstChild);
+        }
+
+        // For each body row, determine risk and anomaly cells and add circle cell & styling
+        const tbody = table.querySelector('tbody');
+        if (!tbody) return;
+        Array.from(tbody.rows).forEach(row => {
+          const cells = Array.from(row.cells);
+          // Expectation: columns include Patient ID, Predicted Risk, Confidence, Anomaly
+          // Find by header names if possible
+          // We'll search cell text
+          let riskCell = cells.find(c => /High Risk|Low Risk/i.test(c.innerText));
+          let anomalyCell = cells.find(c => /Anomaly|Normal/i.test(c.innerText));
+
+          // create circle cell
+          const circleTd = document.createElement('td');
+          circleTd.className = 'circle-td';
+          const dot = document.createElement('span');
+          dot.className = 'row-dot';
+          circleTd.appendChild(dot);
+
+          // Determine classes
+          const riskText = riskCell ? riskCell.innerText.trim() : '';
+          const anomText = anomalyCell ? anomalyCell.innerText.trim() : '';
+
+          if (riskText.toLowerCase().includes('high')) {
+            dot.classList.add('dot-high');
+            if (riskCell) riskCell.classList.add('cell-high');
+          } else {
+            dot.classList.add('dot-low');
+            if (riskCell) riskCell.classList.add('cell-low');
+          }
+
+          if (anomText.toLowerCase().includes('anomaly')) {
+            // if anomaly also present, show anomaly highlight (outline/yellow)
+            dot.classList.add('dot-anom-overlay');
+            if (anomalyCell) anomalyCell.classList.add('cell-anom');
+          }
+
+          // Insert circle cell at beginning
+          row.insertBefore(circleTd, row.firstChild);
+        });
+
+        // Make table responsive
+        table.classList.add('styled-table');
+
+      }, 50);
+    })();
+  </script>
+</body>
+</html>

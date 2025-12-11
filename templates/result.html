@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prediction Result</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Prediction Result</h1>
+
+    <div class="result-card" style="border-color: {{ Color }}">
+      <h2 style="color: {{ Color }}">{{ Risk }}</h2>
+      <p><strong>Predicted Probability:</strong> {{ Probability }}</p>
+      <p><strong>Status:</strong> {{ Anomaly }}</p>
+    </div>
+
+    <a href="/">⬅️ Back to Home</a>
+  </div>
+</body>
+</html>

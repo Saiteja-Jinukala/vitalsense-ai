@@ -1,0 +1,11 @@
+Patient ID,Predicted Risk,Confidence,Anomaly
+1,High Risk,86.21%,Anomaly
+2,Low Risk,4.16%,Normal
+3,Low Risk,42.35%,Anomaly
+4,High Risk,72.89%,Anomaly
+5,High Risk,56.87%,Anomaly
+6,Low Risk,2.31%,Normal
+7,High Risk,82.45%,Anomaly
+8,Low Risk,1.37%,Normal
+9,High Risk,91.53%,Anomaly
+10,Low Risk,3.78%,Normal
