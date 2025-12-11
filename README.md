@@ -121,7 +121,7 @@ Injected sensor anomalies<br>
 
 Derived medical features<br>
 
-Columns Used for Training:
+Columns Used for Training:<br>
 Patient ID<br>
 Age<br>
 Gender<br>
