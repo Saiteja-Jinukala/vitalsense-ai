@@ -161,7 +161,7 @@ These metrics are also visualized below.<br>
 
 📈 Model Performance Graphs
 
-Add these image files after generating them with the code below.
+
 
 <p align="center"> <img src="pictures/confusion_matrix.png" width="55%"> </p> <p align="center"> <img src="pictures/roc_curve.png" width="55%"> </p> <p align="center"> <img src="pictures/feature_importance.png" width="60%"> </p><br>
 
