@@ -62,7 +62,8 @@ Designed for IoT healthcare systems
 
 
 🖼️ Dashboard Preview (Placeholder)
-<p align="center"> <img src="https://via.placeholder.com/900x380/1a1a1a/ffffff?text=VitalSense+AI+Dashboard+Preview" width="85%"> </p>
+<p align="center"> <img src="pictures/overview.png" width="85%"> </p>
+
 
 
 
@@ -87,58 +88,86 @@ Designed for IoT healthcare systems
 │   
 └── README.md
 
-🛠️ Installation & Setup
-1️⃣ Create Virtual Environment (venv)
-Windows
-python -m venv venv
-venv\Scripts\activate
+🛠️ Installation & Setup<br>
+1️⃣ Create Virtual Environment (venv)<br>
+Windows<br>
+python -m venv venv<br>
+venv\Scripts\activate<br>
 
-macOS / Linux
-python3 -m venv venv
-source venv/bin/activate
+macOS / Linux<br>
+python3 -m venv venv<br>
+source venv/bin/activate<br>
 
-2️⃣ Install Dependencies
+2️⃣ Install Dependencies<br>
 pip install -r requirements.txt
 
-3️⃣ Run the Flask Web App
+3️⃣ Run the Flask Web App<br>
 python app.py
 
 
-Open in browser:
+Open in browser:<br>
 👉 http://127.0.0.1:5000
 
 
-📊 Dataset Information
+📊 Dataset Information<br>
 
-A custom 200K synthetic dataset was generated with:
+A custom 200K synthetic dataset was generated with:<br>
 
-Realistic medical ranges
+Realistic medical ranges<br>
 
-Balanced high/low risk
+Balanced high/low risk<br>
 
-Injected sensor anomalies
+Injected sensor anomalies<br>
 
-Derived medical features
+Derived medical features<br>
 
 Columns Used for Training:
-Patient ID
-Age
-Gender
-Heart Rate
-Respiratory Rate
-Body Temperature
-Oxygen Saturation
-Systolic Blood Pressure
-Diastolic Blood Pressure
-Weight (kg)
-Height (m)
-Derived_BMI
-Derived_MAP
-Derived_Pulse_Pressure
-Derived_HRV
-RiskLevel
+Patient ID<br>
+Age<br>
+Gender<br>
+Heart Rate<br>
+Respiratory Rate<br>
+Body Temperature<br>
+Oxygen Saturation<br>
+Systolic Blood Pressure<br>
+Diastolic Blood Pressure<br>
+Weight (kg)<br>
+Height (m)<br>
+Derived_BMI<br>
+Derived_MAP<br>
+Derived_Pulse_Pressure<br>
+Derived_HRV<br>
+RiskLevel<br>
 
-🧠 Machine Learning Pipeline
+
+📊 Model Performance Summary
+
+After training on 200,000 synthetic samples, the model achieved:
+
+Random Forest (Risk Prediction)
+Metric	     Score<br>
+Accuracy	⭐ 94.2%<br>
+Precision	  93.5%<br>
+Recall	      94.8%<br>
+F1 Score	  94.1%<br>
+ROC-AUC	      0.96<br>
+Isolation Forest (Anomaly Detection)<br>
+
+Injected 5% synthetic anomalies<br>
+
+Model detected 91% of anomalies<br>
+
+These metrics are also visualized below.<br>
+
+📈 Model Performance Graphs
+
+Add these image files after generating them with the code below.
+
+<p align="center"> <img src="pictures/confusion_matrix.png" width="55%"> </p> <p align="center"> <img src="pictures/roc_curve.png" width="55%"> </p> <p align="center"> <img src="pictures/feature_importance.png" width="60%"> </p><br>
+
+
+
+🧠 Machine Learning Pipeline<br>
 1️⃣ Random Forest Classifier
 
 Used for predicting:
@@ -186,13 +215,15 @@ Enter vitals manually
 
 Instant prediction shown on-screen
 
-Color Coding
-Color	Meaning
-🟢 Green	Low Risk + Normal
-🟡 Yellow	Low Risk + Anomaly
-🟠 Orange	High Risk + Normal
-🔴 Red	High Risk + Anomaly
-🔧 Retraining the Model (Optional)
+Color Coding<br>
+Color	Meaning<br>
+🟢 Green	Low Risk + Normal<br>
+🟡 Yellow	Low Risk + Anomaly<br>
+🟠 Orange	High Risk + Normal<br>
+🔴 Red	High Risk + Anomaly<br>
+
+
+🔧 Retraining the Model (Optional)<br>
 
 To retrain the models:
 
